@@ -135,23 +135,18 @@ class RecipesViewSet(viewsets.ModelViewSet):
         )
         return response
 
-    @action(
-        detail=True,
-        methods=['POST', 'DELETE'],
-        permission_classes=(IsAuthenticated,)
-    )
-    def shopping_cart(self, request, pk):
+    def post_delete_method(self, request, pk, model):
         recipe = get_object_or_404(Recipe, id=pk)
         if request.method == 'POST':
-            if ShoppingCart.objects.filter(
+            if model.objects.filter(
                 user=request.user,
                 recipe=recipe,
             ).exists():
                 return Response(
-                    {'Рецепт уже в корзине'},
+                    {'Рецепт уже добавлен'},
                     status=status.HTTP_404_NOT_FOUND
                 )
-            ShoppingCart.objects.create(
+            model.objects.create(
                 user=request.user,
                 recipe=recipe,
             )
@@ -163,11 +158,11 @@ class RecipesViewSet(viewsets.ModelViewSet):
                 serializer.data,
                 status=status.HTTP_201_CREATED
             )
-        if ShoppingCart.objects.filter(
+        if model.objects.filter(
                 user=request.user,
                 recipe=recipe,
         ).exists():
-            ShoppingCart.objects.filter(
+            model.objects.filter(
                 user=request.user,
                 recipe=recipe,
             ).delete()
@@ -178,35 +173,13 @@ class RecipesViewSet(viewsets.ModelViewSet):
         methods=['POST', 'DELETE'],
         permission_classes=(IsAuthenticated,)
     )
+    def shopping_cart(self, request, pk):
+        return self.post_delete_method(request, pk, model=ShoppingCart)
+
+    @action(
+        detail=True,
+        methods=['POST', 'DELETE'],
+        permission_classes=(IsAuthenticated,)
+    )
     def favorite(self, request, pk):
-        recipe = get_object_or_404(Recipe, id=pk)
-        if request.method == 'POST':
-            if Favorite.objects.filter(
-                user=request.user,
-                recipe=recipe,
-            ).exists():
-                return Response(
-                    {'Рецепт уже в избранном'},
-                    status=status.HTTP_404_NOT_FOUND
-                )
-            Favorite.objects.create(
-                user=request.user,
-                recipe=recipe,
-            )
-            serializer = CropRecipeSerializer(
-                recipe,
-                context={'request': request}
-            )
-            return Response(
-                serializer.data,
-                status=status.HTTP_201_CREATED
-            )
-        if Favorite.objects.filter(
-                user=request.user,
-                recipe=recipe,
-        ).exists():
-            Favorite.objects.filter(
-                user=request.user,
-                recipe=recipe,
-            ).delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+        return self.post_delete_method(request, pk, Favorite)
