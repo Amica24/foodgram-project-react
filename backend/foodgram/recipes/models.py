@@ -1,5 +1,5 @@
-from django.db import models
 from django.contrib.auth import get_user_model
+from django.db import models
 
 User = get_user_model()
 
@@ -17,21 +17,33 @@ class Follow(models.Model):
         related_name='following'
     )
 
+    class Meta:
+        verbose_name = 'Подписка'
+        verbose_name_plural = 'Подписки'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['follower', 'author'],
+                name='unique_follower_author'
+            ),
+        ]
+
     def __str__(self):
         return f'{self.follower} {self.author}'
 
 
 class Ingredient(models.Model):
     name = models.CharField(
-        max_length=256,
+        max_length=200,
         verbose_name='Название'
     )
     measurement_unit = models.CharField(
-        max_length=256,
+        max_length=50,
         verbose_name='Единица измерения'
     )
 
     class Meta:
+        verbose_name = 'Ингредиент'
+        verbose_name_plural = 'Ингредиенты'
         ordering = ['id']
 
     def __str__(self):
@@ -40,7 +52,7 @@ class Ingredient(models.Model):
 
 class Tag(models.Model):
     name = models.CharField(
-        max_length=200,
+        max_length=50,
         verbose_name='Название',
         unique=True
     )
@@ -50,11 +62,13 @@ class Tag(models.Model):
         unique=True
     )
     slug = models.SlugField(
-        max_length=200,
+        max_length=50,
         unique=True
     )
 
     class Meta:
+        verbose_name = 'Тег'
+        verbose_name_plural = 'Теги'
         ordering = ['id']
 
     def __str__(self):
@@ -98,11 +112,13 @@ class Recipe(models.Model):
         verbose_name='Текстовое описание',
         help_text='Добавьте текстовое описание'
     )
-    cooking_time = models.IntegerField(
+    cooking_time = models.PositiveSmallIntegerField(
         verbose_name='Время приготовления в минутах'
     )
 
     class Meta:
+        verbose_name = 'Рецепт'
+        verbose_name_plural = 'Рецепты'
         ordering = ['-id']
 
     def __str__(self):
@@ -121,6 +137,16 @@ class RecipeTag(models.Model):
         on_delete=models.CASCADE,
     )
 
+    class Meta:
+        verbose_name = 'Промежуточная таблица тег-рецепт'
+        verbose_name_plural = 'Промежуточные таблицы тег-рецепт'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['tag', 'recipe'],
+                name='unique_recipe_tag'
+            ),
+        ]
+
     def __str__(self):
         return f'{self.tag} {self.recipe}'
 
@@ -136,9 +162,19 @@ class IngredientRecipe(models.Model):
         verbose_name='Рецепт',
         on_delete=models.CASCADE,
     )
-    amount = models.FloatField(
+    amount = models.PositiveSmallIntegerField(
         verbose_name='Количество'
     )
+
+    class Meta:
+        verbose_name = 'Промежуточная таблица ингредиент-рецепт'
+        verbose_name_plural = 'Промежуточные таблицы ингредиент-рецепт'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['ingredient', 'recipe'],
+                name='unique_ingredient_recipe'
+            ),
+        ]
 
     def __str__(self):
         return f'{self.ingredient} {self.amount}'
@@ -158,6 +194,16 @@ class Favorite(models.Model):
         related_name='favorites'
     )
 
+    class Meta:
+        verbose_name = 'Избранное'
+        verbose_name_plural = 'Избранное'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'recipe'],
+                name='unique_favorite'
+            ),
+        ]
+
     def __str__(self):
         return f'{self.user} {self.recipe}'
 
@@ -167,14 +213,24 @@ class ShoppingCart(models.Model):
         User,
         verbose_name='Пользователь',
         on_delete=models.CASCADE,
-        related_name='shoppingcart'
+        related_name='shopping_cart'
     )
     recipe = models.ForeignKey(
         Recipe,
         verbose_name='Рецепт',
         on_delete=models.CASCADE,
-        related_name='shoppingcart'
+        related_name='shopping_cart'
     )
+
+    class Meta:
+        verbose_name = 'Список покупок'
+        verbose_name_plural = 'Списки покупок'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'recipe'],
+                name='unique_shopping_cart'
+            ),
+        ]
 
     def __str__(self):
         return f'{self.user} {self.recipe}'

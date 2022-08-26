@@ -1,5 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import SimpleRouter
+
 from .views import (
     TagsViewSet, IngredientsViewSet,
     RecipesViewSet, CustomUserViewSet
@@ -8,13 +9,13 @@ from .views import (
 router = SimpleRouter()
 
 router.register(
-    r'tags', TagsViewSet, basename='tags'
+    'tags', TagsViewSet, basename='tags'
 )
 router.register(
-    r'ingredients', IngredientsViewSet, basename='ingredients'
+    'ingredients', IngredientsViewSet, basename='ingredients'
 )
 router.register(
-    r'recipes', RecipesViewSet, basename='recipes'
+    'recipes', RecipesViewSet, basename='recipes'
 )
 
 urlpatterns = [

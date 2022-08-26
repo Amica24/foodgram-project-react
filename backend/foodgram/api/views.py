@@ -20,6 +20,7 @@ from .serializers import (
     RecipeGetSerializer, RecipeSerializer, TagSerializer,
     UserCreateProfileSerializer, UserProfileSerializer
 )
+from .utils import create_shopping_list
 
 
 class CustomUserViewSet(UserViewSet):
@@ -29,8 +30,7 @@ class CustomUserViewSet(UserViewSet):
     def get_serializer_class(self):
         if self.request.method == 'GET':
             return UserProfileSerializer
-        else:
-            return UserCreateProfileSerializer
+        return UserCreateProfileSerializer
 
     @action(
         detail=False,
@@ -38,8 +38,7 @@ class CustomUserViewSet(UserViewSet):
         permission_classes=(IsAuthenticated,)
     )
     def subscriptions(self, request):
-        follower = get_object_or_404(User, id=self.request.user.id)
-        queryset = User.objects.filter(following__follower=follower)
+        queryset = User.objects.filter(following__follower=self.request.user)
         pages = self.paginate_queryset(queryset)
         serializer = FollowSerializer(
             pages,
@@ -102,8 +101,7 @@ class RecipesViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.request.method == 'GET':
             return RecipeGetSerializer
-        else:
-            return RecipeSerializer
+        return RecipeSerializer
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
@@ -121,11 +119,7 @@ class RecipesViewSet(viewsets.ModelViewSet):
             'ingredient__name',
             'ingredient__measurement_unit'
         ).annotate(Sum('amount'))
-        for ingredient in ingredients:
-            shopping_list += (
-                f"{ingredient['ingredient__name']} "
-                f"({ingredient['ingredient__measurement_unit']}) - "
-                f"{ingredient['amount__sum']}\n")
+        shopping_list = create_shopping_list(ingredients, shopping_list)
         response = HttpResponse(
             shopping_list,
             content_type='text/plain'
@@ -135,7 +129,8 @@ class RecipesViewSet(viewsets.ModelViewSet):
         )
         return response
 
-    def post_delete_method(self, request, pk, model):
+    @staticmethod
+    def _post_delete_method(request, pk, model):
         recipe = get_object_or_404(Recipe, id=pk)
         if request.method == 'POST':
             if model.objects.filter(
@@ -174,7 +169,7 @@ class RecipesViewSet(viewsets.ModelViewSet):
         permission_classes=(IsAuthenticated,)
     )
     def shopping_cart(self, request, pk):
-        return self.post_delete_method(request, pk, model=ShoppingCart)
+        return self._post_delete_method(request, pk, model=ShoppingCart)
 
     @action(
         detail=True,
@@ -182,4 +177,4 @@ class RecipesViewSet(viewsets.ModelViewSet):
         permission_classes=(IsAuthenticated,)
     )
     def favorite(self, request, pk):
-        return self.post_delete_method(request, pk, Favorite)
+        return self._post_delete_method(request, pk, Favorite)

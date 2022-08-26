@@ -13,14 +13,14 @@ class UserCreateProfileSerializer(UserCreateSerializer):
 
     class Meta:
         model = User
-        fields = [
+        fields = (
             'id',
             'email',
             'username',
             'first_name',
             'last_name',
             'password'
-        ]
+        )
         read_only_fields = ('id',)
 
 
@@ -29,14 +29,14 @@ class UserProfileSerializer(UserSerializer):
 
     class Meta:
         model = User
-        fields = [
+        fields = (
             'id',
             'email',
             'username',
             'first_name',
             'last_name',
             'is_subscribed'
-        ]
+        )
         read_only_fields = ('id', 'username')
 
     def get_is_subscribed(self, obj):
@@ -52,22 +52,22 @@ class UserProfileSerializer(UserSerializer):
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
-        fields = [
+        fields = (
             'id',
             'name',
             'color',
             'slug'
-        ]
+        )
 
 
 class IngredientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ingredient
-        fields = [
+        fields = (
             'id',
             'name',
             'measurement_unit'
-        ]
+        )
 
 
 class IngredientRecipeSerializer(serializers.ModelSerializer):
@@ -80,12 +80,12 @@ class IngredientRecipeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = IngredientRecipe
-        fields = [
+        fields = (
             'id',
             'name',
             'measurement_unit',
             'amount'
-        ]
+        )
 
 
 class RecipeGetSerializer(serializers.ModelSerializer):
@@ -98,7 +98,7 @@ class RecipeGetSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Recipe
-        fields = [
+        fields = (
             'id',
             'tags',
             'author',
@@ -109,7 +109,7 @@ class RecipeGetSerializer(serializers.ModelSerializer):
             'image',
             'text',
             'cooking_time'
-        ]
+        )
 
     def get_tags(self, obj):
         tags = Tag.objects.filter(recipe=obj)
@@ -151,7 +151,7 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Recipe
-        fields = [
+        fields = (
             'tags',
             'author',
             'ingredients',
@@ -159,7 +159,7 @@ class RecipeSerializer(serializers.ModelSerializer):
             'image',
             'text',
             'cooking_time'
-        ]
+        )
 
     def validate(self, data):
         ingredients = self.initial_data.get('ingredients')
@@ -221,7 +221,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     def create_tags(self, recipe, tags_data):
         tags = []
         for name in tags_data:
-            tag = Tag.objects.get(name=name.name)
+            tag = get_object_or_404(Tag, name=name.name)
             tags.append(tag)
         recipe.tags.set(tags)
         return recipe
@@ -250,12 +250,12 @@ class CropRecipeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Recipe
-        fields = [
+        fields = (
             'id',
             'name',
             'image',
             'cooking_time'
-        ]
+        )
 
 
 class FollowSerializer(UserProfileSerializer):
