@@ -10,6 +10,7 @@ from .models import (
 class CustomUserAdmin(UserAdmin):
     list_filter = ('first_name', 'email')
 
+
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
     list_filter = ('name', 'author', 'tags')
