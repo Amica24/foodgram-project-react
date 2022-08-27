@@ -112,14 +112,13 @@ class RecipesViewSet(viewsets.ModelViewSet):
         permission_classes=(IsAuthenticated,)
     )
     def download_shopping_cart(self, request):
-        shopping_list = 'Список покупок \n\n'
         ingredients = IngredientRecipe.objects.filter(
             recipe__shoppingcart__user=request.user
         ).values(
             'ingredient__name',
             'ingredient__measurement_unit'
         ).annotate(Sum('amount'))
-        shopping_list = create_shopping_list(ingredients, shopping_list)
+        shopping_list = create_shopping_list(ingredients)
         response = HttpResponse(
             shopping_list,
             content_type='text/plain'

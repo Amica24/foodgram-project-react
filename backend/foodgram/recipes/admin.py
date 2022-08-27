@@ -35,6 +35,3 @@ admin.site.register(RecipeTag)
 admin.site.register(Follow)
 admin.site.register(Favorite)
 admin.site.register(ShoppingCart)
-
-
-

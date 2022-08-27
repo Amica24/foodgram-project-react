@@ -1,4 +1,5 @@
-def create_shopping_list(ingredients, shopping_list):
+def create_shopping_list(ingredients):
+    shopping_list = 'Список покупок \n\n'
     for ingredient in ingredients:
         shopping_list += (
             f"{ingredient['ingredient__name']} "

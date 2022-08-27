@@ -163,43 +163,40 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         ingredients = self.initial_data.get('ingredients')
-        if ingredients:
-            ingredients_list = []
-            for ingredient in ingredients:
-                ingredient_id = ingredient.get('id')
-                ingredient_item = get_object_or_404(
-                    Ingredient,
-                    id=ingredient_id
-                )
-                if ingredient_item in ingredients_list:
-                    raise serializers.ValidationError(
-                        'Ингредиенты должны быть уникальными'
-                    )
-                ingredients_list.append(ingredient_item)
-                amount = ingredient.get('amount')
-                if int(amount) <= 0:
-                    raise serializers.ValidationError(
-                        'Количество ингредиента указано неверно или'
-                        'значние равняется нулю'
-                    )
-        else:
+        if not ingredients:
             raise serializers.ValidationError(
                 'Необходимо добавить игредиенты'
             )
+        ingredients_list = []
+        for ingredient in ingredients:
+            ingredient_id = ingredient.get('id')
+            ingredient_item = get_object_or_404(
+                Ingredient,
+                id=ingredient_id
+            )
+            if ingredient_item in ingredients_list:
+                raise serializers.ValidationError(
+                    'Ингредиенты должны быть уникальными'
+                )
+            ingredients_list.append(ingredient_item)
+            amount = ingredient.get('amount')
+            if int(amount) <= 0:
+                raise serializers.ValidationError(
+                    'Количество ингредиента указано неверно или'
+                    'значние равняется нулю'
+                )
         tags = self.initial_data.get('tags')
-        if tags:
-            tags_list = []
-            for tag in tags:
-                if tag in tags_list:
-                    raise serializers.ValidationError(
-                        'Тэги должны быть уникальными!'
-                    )
-                tags_list.append(tag)
-        else:
+        if not tags:
             raise serializers.ValidationError(
                 'Необходимо выбрать теги'
             )
-
+        tags_list = []
+        for tag in tags:
+            if tag in tags_list:
+                raise serializers.ValidationError(
+                    'Тэги должны быть уникальными!'
+                )
+            tags_list.append(tag)
         cooking_time = self.initial_data.get('cooking_time')
         if int(cooking_time) <= 0:
             raise serializers.ValidationError(

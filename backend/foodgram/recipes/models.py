@@ -138,8 +138,8 @@ class RecipeTag(models.Model):
     )
 
     class Meta:
-        verbose_name = 'Промежуточная таблица тег-рецепт'
-        verbose_name_plural = 'Промежуточные таблицы тег-рецепт'
+        verbose_name = 'Тег рецепта'
+        verbose_name_plural = 'Теги рецептов'
         constraints = [
             models.UniqueConstraint(
                 fields=['tag', 'recipe'],
@@ -167,8 +167,8 @@ class IngredientRecipe(models.Model):
     )
 
     class Meta:
-        verbose_name = 'Промежуточная таблица ингредиент-рецепт'
-        verbose_name_plural = 'Промежуточные таблицы ингредиент-рецепт'
+        verbose_name = 'Ингредиент рецепта'
+        verbose_name_plural = 'Ингредиенты рецептов'
         constraints = [
             models.UniqueConstraint(
                 fields=['ingredient', 'recipe'],
