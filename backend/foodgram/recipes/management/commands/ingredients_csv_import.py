@@ -1,10 +1,9 @@
-from csv import DictReader
 import logging
 import os
 import sys
+from csv import DictReader
 
 from django.core.management import BaseCommand
-
 from recipes.models import Ingredient
 
 formatter = logging.Formatter(

@@ -1,12 +1,9 @@
 from django.shortcuts import get_object_or_404
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from drf_extra_fields.fields import Base64ImageField
+from recipes.models import (Favorite, Follow, Ingredient, IngredientRecipe,
+                            Recipe, ShoppingCart, Tag, User)
 from rest_framework import serializers
-
-from recipes.models import (
-    Favorite, Follow, Ingredient, IngredientRecipe,
-    Recipe, ShoppingCart, Tag, User
-)
 
 
 class UserCreateProfileSerializer(UserCreateSerializer):

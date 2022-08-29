@@ -3,6 +3,8 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
+from recipes.models import (Favorite, Follow, Ingredient, IngredientRecipe,
+                            Recipe, ShoppingCart, Tag, User)
 from rest_framework import filters, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.pagination import LimitOffsetPagination
@@ -11,15 +13,10 @@ from rest_framework.response import Response
 
 from .filters import RecipeFilter
 from .permissions import IsAuthorOrReadOnly
-from recipes.models import (
-    Favorite, Follow, Ingredient, IngredientRecipe,
-    Recipe, ShoppingCart, Tag, User
-)
-from .serializers import (
-    CropRecipeSerializer, FollowSerializer, IngredientSerializer,
-    RecipeGetSerializer, RecipeSerializer, TagSerializer,
-    UserCreateProfileSerializer, UserProfileSerializer
-)
+from .serializers import (CropRecipeSerializer, FollowSerializer,
+                          IngredientSerializer, RecipeGetSerializer,
+                          RecipeSerializer, TagSerializer,
+                          UserCreateProfileSerializer, UserProfileSerializer)
 from .utils import create_shopping_list
 
 
@@ -160,7 +157,7 @@ class RecipesViewSet(viewsets.ModelViewSet):
                 user=request.user,
                 recipe=recipe,
             ).delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(
         detail=True,

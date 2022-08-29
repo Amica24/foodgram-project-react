@@ -1,10 +1,8 @@
-from django.urls import path, include
+from django.urls import include, path
 from rest_framework.routers import SimpleRouter
 
-from .views import (
-    TagsViewSet, IngredientsViewSet,
-    RecipesViewSet, CustomUserViewSet
-)
+from .views import (CustomUserViewSet, IngredientsViewSet, RecipesViewSet,
+                    TagsViewSet)
 
 router = SimpleRouter()
 
@@ -20,11 +18,11 @@ router.register(
 
 urlpatterns = [
     path('users/subscriptions/', CustomUserViewSet.as_view(
-        {'get': 'subscriptions', })
-         ),
+        {'get': 'subscriptions', }
+    )),
     path('users/<int:id>/subscribe/', CustomUserViewSet.as_view(
-        {'post': 'subscribe', 'delete': 'subscribe'})
-         ),
+        {'post': 'subscribe', 'delete': 'subscribe'}
+    )),
     path('', include(router.urls)),
     path('', include('djoser.urls')),
     path('auth/', include('djoser.urls.authtoken')),
