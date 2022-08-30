@@ -12,6 +12,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from .filters import RecipeFilter
+from .paginators import CustomPagination
 from .permissions import IsAuthorOrReadOnly
 from .serializers import (CropRecipeSerializer, FollowSerializer,
                           IngredientSerializer, RecipeGetSerializer,
@@ -22,7 +23,7 @@ from .utils import create_shopping_list
 
 class CustomUserViewSet(UserViewSet):
     queryset = User.objects.all()
-    pagination_class = LimitOffsetPagination
+    pagination_class = CustomPagination
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
@@ -93,7 +94,7 @@ class RecipesViewSet(viewsets.ModelViewSet):
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
     queryset = Recipe.objects.all()
-    pagination_class = LimitOffsetPagination
+    pagination_class = CustomPagination
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
