@@ -1,4 +1,6 @@
 import django_filters
+from rest_framework import filters
+
 from recipes.models import Recipe
 
 
@@ -16,3 +18,7 @@ class RecipeFilter(django_filters.FilterSet):
             'is_in_shopping_cart',
             'tags'
         )
+
+
+class IngredientFilter(filters.SearchFilter):
+    search_param = 'name'

@@ -1,5 +1,5 @@
 from django.db.models import Sum
-from django.http import HttpResponse
+from django.http import HttpResponse, FileResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
@@ -7,11 +7,10 @@ from recipes.models import (Favorite, Follow, Ingredient, IngredientRecipe,
                             Recipe, ShoppingCart, Tag, User)
 from rest_framework import filters, status, viewsets
 from rest_framework.decorators import action
-from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from .filters import RecipeFilter
+from .filters import RecipeFilter, IngredientFilter
 from .paginators import CustomPagination
 from .permissions import IsAuthorOrReadOnly
 from .serializers import (CropRecipeSerializer, FollowSerializer,
@@ -84,7 +83,7 @@ class TagsViewSet(viewsets.ReadOnlyModelViewSet):
 class IngredientsViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
-    filter_backends = (filters.SearchFilter,)
+    filter_backends = (IngredientFilter,)
     search_fields = ('^name',)
     pagination_class = None
 
@@ -94,7 +93,7 @@ class RecipesViewSet(viewsets.ModelViewSet):
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
     queryset = Recipe.objects.all()
-    pagination_class = CustomPagination
+    pagination_class = None
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
@@ -125,6 +124,11 @@ class RecipesViewSet(viewsets.ModelViewSet):
             'attachment; filename="ShoppingCart.txt"'
         )
         return response
+        # return FileResponse(
+        #     shopping_list,
+        #     as_attachment=True,
+        #     filename='shopping_list.pdf'
+        # )
 
     @staticmethod
     def _post_delete_method(request, pk, model):
