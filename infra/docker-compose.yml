@@ -15,7 +15,7 @@ services:
     restart: always
     volumes:
       - static_value:/app/foodgram/static/
-      - media_value:/app/foodgram/media/recipes
+      - media_value:/app/foodgram/media/
     depends_on:
       - db
     env_file:
