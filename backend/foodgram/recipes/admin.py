@@ -9,10 +9,18 @@ class CustomUserAdmin(UserAdmin):
     list_filter = ('first_name', 'email')
 
 
+class IngredientAmount(admin.TabularInline):
+    model = IngredientRecipe
+    extra = 1
+
+
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
-    list_filter = ('name', 'author', 'tags')
     list_display = ('name', 'author', 'favorites__count')
+    search_fields = ('name', 'author')
+    list_filter = ('author', 'name', 'tags')
+    filter_horizontal = ('ingredients',)
+    inlines = [IngredientAmount,]
 
     @admin.display(description='В избранном')
     def favorites__count(self, obj):

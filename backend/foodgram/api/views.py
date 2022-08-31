@@ -1,17 +1,16 @@
 from django.db.models import Sum
-from django.http import HttpResponse, FileResponse
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
 from recipes.models import (Favorite, Follow, Ingredient, IngredientRecipe,
                             Recipe, ShoppingCart, Tag, User)
-from rest_framework import filters, status, viewsets
+from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from .filters import RecipeFilter, IngredientFilter
-from .paginators import CustomPagination
 from .permissions import IsAuthorOrReadOnly
 from .serializers import (CropRecipeSerializer, FollowSerializer,
                           IngredientSerializer, RecipeGetSerializer,
@@ -22,7 +21,6 @@ from .utils import create_shopping_list
 
 class CustomUserViewSet(UserViewSet):
     queryset = User.objects.all()
-    pagination_class = CustomPagination
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
@@ -93,7 +91,6 @@ class RecipesViewSet(viewsets.ModelViewSet):
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
     queryset = Recipe.objects.all()
-    pagination_class = None
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
