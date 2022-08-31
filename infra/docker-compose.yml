@@ -14,7 +14,6 @@ services:
     image: amica24/foodgram_backend:latest
     restart: always
     volumes:
-      - redoc:/app/foodgram/static/docs/
       - static_value:/app/foodgram/static/
       - media_value:/app/foodgram/media/
     depends_on:
@@ -36,7 +35,7 @@ services:
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
       - result_build:/usr/share/nginx/html/
-      - redoc:/var/html/static/docs/
+      - ../docs:/usr/share/nginx/html/api/docs/
       - static_value:/var/html/static/
       - media_value:/var/html/media/
     depends_on:
@@ -50,5 +49,4 @@ volumes:
   media_value:
   postgres_data:
   result_build:
-  redoc:
-  data_value:
+
