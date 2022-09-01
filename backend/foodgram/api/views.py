@@ -98,11 +98,7 @@ class RecipesViewSet(viewsets.ModelViewSet):
         return RecipeSerializer
 
     def perform_create(self, serializer):
-        # serializer.save(author=self.request.user)
-        return Response(
-            serializer.save(author=self.request.user),
-            status=status.HTTP_200_OK
-        )
+        serializer.save(author=self.request.user)
 
     @action(
         detail=False,
