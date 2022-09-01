@@ -98,7 +98,11 @@ class RecipesViewSet(viewsets.ModelViewSet):
         return RecipeSerializer
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+        # serializer.save(author=self.request.user)
+        return Response(
+            serializer.save(author=self.request.user),
+            status=status.HTTP_200_OK
+        )
 
     @action(
         detail=False,
@@ -175,4 +179,4 @@ class RecipesViewSet(viewsets.ModelViewSet):
         permission_classes=(IsAuthenticated,)
     )
     def favorite(self, request, pk):
-        return self._post_delete_method(request, pk, Favorite)
+        return self._post_delete_method(request, pk, model=Favorite)

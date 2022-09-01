@@ -14,9 +14,9 @@ services:
     image: amica24/foodgram_backend:latest
     restart: always
     volumes:
-      - static_value:/app/foodgram/static/
+      - static_value:/app/foodgram/static/rest_framework/
       - media_value:/app/foodgram/media/recipes/
-      - redoc:/app/foodgram/docs/
+      - redoc:/app/foodgram/static/docs/
     depends_on:
       - db
     env_file:

@@ -20,7 +20,7 @@ class RecipeFilter(django_filters.FilterSet):
     def get_is_favorited(self, queryset, value):
         if value:
             return queryset.filter(
-                favorited__user=self.request.user
+                favorites__user=self.request.user
             )
         return queryset
 
@@ -38,19 +38,3 @@ class RecipeFilter(django_filters.FilterSet):
 
 class IngredientFilter(filters.SearchFilter):
     search_param = 'name'
-
-
-# class RecipeFilter(django_filters.FilterSet):
-#     tags = django_filters.CharFilter(
-#         field_name='tags',
-#         lookup_expr='slug'
-#     )
-#
-#     class Meta:
-#         model = Recipe
-#         fields = (
-#             'is_favorited',
-#             'author',
-#             'is_in_shopping_cart',
-#             'tags'
-#         )
