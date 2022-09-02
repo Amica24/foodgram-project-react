@@ -1,9 +1,5 @@
 from django_filters.rest_framework import FilterSet, filters
-
-from django_filters.rest_framework import DjangoFilterBackend
-
-# import django_filters
-# from rest_framework import filters
+from rest_framework.filters import SearchFilter
 
 from recipes.models import Recipe, Tag
 
@@ -40,5 +36,5 @@ class RecipeFilter(FilterSet):
         fields = ('tags', 'author', 'is_favorited', 'is_in_shopping_cart')
 
 
-class IngredientFilter(FilterSet):
+class IngredientFilter(SearchFilter):
     search_param = 'name'
