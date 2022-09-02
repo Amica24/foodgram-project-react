@@ -34,10 +34,12 @@ class Follow(models.Model):
 class Ingredient(models.Model):
     name = models.CharField(
         max_length=200,
+        blank=False,
         verbose_name='Название'
     )
     measurement_unit = models.CharField(
         max_length=50,
+        blank=False,
         verbose_name='Единица измерения'
     )
 

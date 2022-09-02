@@ -121,11 +121,6 @@ class RecipesViewSet(viewsets.ModelViewSet):
             'attachment; filename="ShoppingCart.txt"'
         )
         return response
-        # return FileResponse(
-        #     shopping_list,
-        #     as_attachment=True,
-        #     filename='shopping_list.pdf'
-        # )
 
     @staticmethod
     def _post_delete_method(request, pk, model):

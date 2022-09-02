@@ -73,7 +73,7 @@ class IngredientRecipeSerializer(serializers.ModelSerializer):
     measurement_unit = serializers.ReadOnlyField(
         source='ingredient.measurement_unit'
     )
-    amount = serializers.FloatField()
+    # amount = serializers.FloatField()
 
     class Meta:
         model = IngredientRecipe
@@ -140,10 +140,11 @@ class RecipeSerializer(serializers.ModelSerializer):
         queryset=Tag.objects.all(), many=True, allow_null=True
     )
     ingredients = IngredientRecipeSerializer(many=True)
-    author = UserProfileSerializer(
-        default=serializers.CurrentUserDefault(),
-        read_only=True
-    )
+    author = UserProfileSerializer(read_only=True)
+    # author = UserProfileSerializer(
+    #     default=serializers.CurrentUserDefault(),
+    #     read_only=True
+    # )
     image = Base64ImageField()
 
     class Meta:
@@ -203,7 +204,8 @@ class RecipeSerializer(serializers.ModelSerializer):
         data['ingredients'] = ingredients
         return data
 
-    def create_ingredients(self, recipe, ingredients):
+    @staticmethod
+    def create_ingredients(recipe, ingredients):
         IngredientRecipe.objects.bulk_create(
             [IngredientRecipe(
                 ingredient=Ingredient.objects.get(id=ingredient.get('id')),
@@ -212,7 +214,8 @@ class RecipeSerializer(serializers.ModelSerializer):
             ) for ingredient in ingredients]
         )
 
-    def create_tags(self, recipe, tags_data):
+    @staticmethod
+    def create_tags(recipe, tags_data):
         tags = []
         for name in tags_data:
             tag = get_object_or_404(Tag, name=name.name)
@@ -223,7 +226,8 @@ class RecipeSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         ingredients_data = validated_data.pop('ingredients')
         tags_data = validated_data.pop('tags')
-        recipe = Recipe.objects.create(**validated_data)
+        image = validated_data.pop('image')
+        recipe = Recipe.objects.create(image=image, **validated_data)
         self.create_tags(recipe=recipe, tags_data=tags_data)
         self.create_ingredients(recipe=recipe, ingredients=ingredients_data)
         return recipe
@@ -236,11 +240,18 @@ class RecipeSerializer(serializers.ModelSerializer):
         self.create_tags(recipe=instance, tags_data=tags)
         ingredients = validated_data.get('ingredients')
         self.create_ingredients(recipe=instance, ingredients=ingredients)
-        return super(RecipeSerializer, self).update(instance, validated_data)
+        return super().update(instance, validated_data)
+
+    def to_representation(self, recipe):
+        data = RecipeGetSerializer(
+            recipe,
+            context={'request': self.context.get('request')}
+        ).data
+        return data
 
 
 class CropRecipeSerializer(serializers.ModelSerializer):
-    image = Base64ImageField(read_only=True)
+    image = Base64ImageField()
 
     class Meta:
         model = Recipe
@@ -307,3 +318,49 @@ class FollowSerializer(UserProfileSerializer):
 
     def get_recipes_count(self, obj):
         return obj.recipes.count()
+
+
+class FavoriteRecipeSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all(),
+        write_only=True,
+    )
+    recipe = serializers.PrimaryKeyRelatedField(
+        queryset=Recipe.objects.all(),
+        write_only=True,
+    )
+
+    class Meta:
+        model = Favorite
+        fields = (
+            'user',
+            'recipe'
+        )
+
+    def to_representation(self, instance):
+        request = self.context.get('request')
+        context = {'request': request}
+        return CropRecipeSerializer(
+            instance.recipe,
+            context=context
+        ).data
+
+
+class ShoppingListSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    recipe = serializers.PrimaryKeyRelatedField(queryset=Recipe.objects.all())
+
+    class Meta:
+        model = ShoppingCart
+        fields = (
+            'user',
+            'recipe'
+        )
+
+    def to_representation(self, instance):
+        request = self.context.get('request')
+        context = {'request': request}
+        return CropRecipeSerializer(
+            instance.recipe,
+            context=context
+        ).data
