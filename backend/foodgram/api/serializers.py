@@ -1,9 +1,10 @@
 from django.shortcuts import get_object_or_404
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from drf_extra_fields.fields import Base64ImageField
+from rest_framework import serializers
+
 from recipes.models import (Favorite, Follow, Ingredient, IngredientRecipe,
                             Recipe, ShoppingCart, Tag, User, RecipeTag)
-from rest_framework import serializers
 
 
 class UserCreateProfileSerializer(UserCreateSerializer):
@@ -235,22 +236,14 @@ class RecipeSerializer(serializers.ModelSerializer):
         IngredientRecipe.objects.filter(recipe=instance).delete()
         self.create_tags(recipe=instance, tags_data=tags)
         self.create_ingredients(recipe=instance, ingredients=ingredients)
-        instance.image = validated_data.get('image', instance.image)
         instance.name = validated_data.get('name', instance.name)
-        instance.text = validated_data.get('text', instance.text)
         instance.cooking_time = validated_data.get(
             'cooking_time', instance.cooking_time
         )
+        instance.text = validated_data.get('text', instance.text)
+        instance.image = validated_data.get('image', instance.image)
         instance.save()
         return instance
-
-        # instance = super().update(instance, validated_data)
-        # instance.tags.clear()
-        # self.create_tags(recipe=instance, tags_data=tags)
-        # instance.ingredients.clear()
-        # self.create_ingredients(recipe=instance, ingredients=ingredients)
-        # instance.save()
-        # return instance
 
     def to_representation(self, recipe):
         data = RecipeGetSerializer(
