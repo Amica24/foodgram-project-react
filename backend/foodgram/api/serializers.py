@@ -236,7 +236,9 @@ class RecipeSerializer(serializers.ModelSerializer):
         self.create_tags(recipe=instance, tags_data=tags)
         ingredients = validated_data.get('ingredients')
         self.create_ingredients(recipe=instance, ingredients=ingredients)
-        return super().update(instance, validated_data)
+        Recipe.objects.filter(id=instance.id).update(**validated_data)
+        return instance
+        # return super().update(instance, validated_data)
 
     def to_representation(self, recipe):
         data = RecipeGetSerializer(
