@@ -73,7 +73,7 @@ class IngredientRecipeSerializer(serializers.ModelSerializer):
     measurement_unit = serializers.ReadOnlyField(
         source='ingredient.measurement_unit'
     )
-    amount = serializers.FloatField(write_only=True)
+    amount = serializers.FloatField()
 
     class Meta:
         model = IngredientRecipe
@@ -141,10 +141,6 @@ class RecipeSerializer(serializers.ModelSerializer):
     )
     ingredients = IngredientRecipeSerializer(many=True)
     author = UserProfileSerializer(read_only=True)
-    # author = UserProfileSerializer(
-    #     default=serializers.CurrentUserDefault(),
-    #     read_only=True
-    # )
     image = Base64ImageField()
 
     class Meta:
