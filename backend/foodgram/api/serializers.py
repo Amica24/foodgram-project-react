@@ -3,8 +3,10 @@ from djoser.serializers import UserCreateSerializer, UserSerializer
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
-from recipes.models import (Favorite, Follow, Ingredient, IngredientRecipe,
-                            Recipe, ShoppingCart, Tag, User, RecipeTag)
+from recipes.models import (
+    Favorite, Follow, Ingredient, IngredientRecipe,
+    Recipe, RecipeTag, ShoppingCart, Tag, User
+)
 
 
 class UserCreateProfileSerializer(UserCreateSerializer):
@@ -177,8 +179,7 @@ class RecipeSerializer(serializers.ModelSerializer):
             amount = ingredient.get('amount')
             if int(amount) <= 0:
                 raise serializers.ValidationError(
-                    'Количество ингредиента указано неверно или'
-                    'значние равняется нулю'
+                    'Количество ингредиента меньше или равняется нулю'
                 )
         tags = self.initial_data.get('tags')
         if not tags:
